@@ -1,0 +1,88 @@
+package com.unl.automatas.cfgengine.parser;
+
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.List;
+
+class Parser;
+
+parser code {:
+    private List<String> derivations = new ArrayList<>();
+
+    public void addDerivation(String der) {
+        derivations.add(0, der); // Agregamos al inicio para ver el orden bottom-up, o al final
+    }
+
+    public List<String> getDerivations() {
+        return derivations;
+    }
+
+    @Override
+    public void syntax_error(Symbol s) {
+        System.err.println("Error sintáctico en la línea " + (s.left + 1) + ", columna " + (s.right + 1) + ". Símbolo no reconocido: " + s.value);
+        derivations.add("Error sintáctico: Símbolo inesperado en la línea " + (s.left + 1) + ", token: " + s.value);
+    }
+:}
+
+terminal INGREDIENT, GRAMS, OF, STEP, FOR, MINUTES, SECONDS, BOIL, ADD, MIX, AND;
+terminal COLON, SEMICOLON;
+terminal Integer NUMBER;
+terminal String IDENTIFIER;
+
+non terminal Object receta, declaracion_ingrediente, paso, accion_cocina, tiempo;
+non terminal Object ingredientes_list, pasos_list;
+
+start with receta;
+
+receta ::= ingredientes_list pasos_list {: 
+               parser.addDerivation("Receta -> ListaIngredientes ListaPasos"); 
+           :} 
+         ;
+
+ingredientes_list ::= declaracion_ingrediente ingredientes_list {: 
+                          parser.addDerivation("ListaIngredientes -> DeclaracionIngrediente ListaIngredientes"); 
+                      :}
+                    | declaracion_ingrediente {: 
+                          parser.addDerivation("ListaIngredientes -> DeclaracionIngrediente"); 
+                      :}
+                    ;
+
+pasos_list ::= paso pasos_list {: 
+                   parser.addDerivation("ListaPasos -> Paso ListaPasos"); 
+               :}
+             | paso {: 
+                   parser.addDerivation("ListaPasos -> Paso"); 
+               :}
+             ;
+
+declaracion_ingrediente ::= INGREDIENT COLON NUMBER:n GRAMS OF IDENTIFIER:id SEMICOLON {:
+                                parser.addDerivation("DeclaracionIngrediente -> INGREDIENT : NUMBER(" + n + ") GRAMS OF IDENTIFIER(" + id + ") ;");
+                            :}
+                          ;
+
+paso ::= STEP NUMBER:n COLON accion_cocina FOR tiempo SEMICOLON {:
+             parser.addDerivation("Paso -> STEP NUMBER(" + n + ") : AccionCocina FOR Tiempo ;");
+         :}
+       | STEP NUMBER:n COLON accion_cocina SEMICOLON {:
+             parser.addDerivation("Paso -> STEP NUMBER(" + n + ") : AccionCocina ;");
+         :}
+       ;
+
+accion_cocina ::= BOIL IDENTIFIER:id {: 
+                      parser.addDerivation("AccionCocina -> BOIL IDENTIFIER(" + id + ")"); 
+                  :}
+                | ADD IDENTIFIER:id {: 
+                      parser.addDerivation("AccionCocina -> ADD IDENTIFIER(" + id + ")"); 
+                  :}
+                | MIX IDENTIFIER:id1 AND IDENTIFIER:id2 {: 
+                      parser.addDerivation("AccionCocina -> MIX IDENTIFIER(" + id1 + ") AND IDENTIFIER(" + id2 + ")"); 
+                  :}
+                ;
+
+tiempo ::= NUMBER:n MINUTES {: 
+               parser.addDerivation("Tiempo -> NUMBER(" + n + ") MINUTES"); 
+           :}
+         | NUMBER:n SECONDS {: 
+               parser.addDerivation("Tiempo -> NUMBER(" + n + ") SECONDS"); 
+           :}
+         ;
