@@ -14,10 +14,10 @@ import java_cup.runtime.Symbol;
 
 %{
   private Symbol symbol(int type) {
-    return new Symbol(type, yyline, yycolumn);
+    return new Symbol(type, yyline + 1, yycolumn + 1);
   }
   private Symbol symbol(int type, Object value) {
-    return new Symbol(type, yyline, yycolumn, value);
+    return new Symbol(type, yyline + 1, yycolumn + 1, value);
   }
 %}
 
@@ -48,5 +48,5 @@ Integer    = [0-9]+
   {Integer}    { return symbol(ParserSym.NUMBER, Integer.parseInt(yytext())); }
   {Identifier} { return symbol(ParserSym.IDENTIFIER, yytext()); }
   
-  [^]          { return symbol(ParserSym.error, yytext()); }
+  [^]          { throw new RuntimeException("Error léxico: Carácter no reconocido '" + yytext() + "' en la línea " + (yyline + 1) + ", columna " + (yycolumn + 1)); }
 }
