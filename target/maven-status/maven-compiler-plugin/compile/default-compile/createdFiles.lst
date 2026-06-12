@@ -1,6 +1,0 @@
-com/unl/automatas/cfgengine/CfgEngineApplication.class
-com/unl/automatas/cfgengine/ParseController.class
-com/unl/automatas/cfgengine/parser/Parser.class
-com/unl/automatas/cfgengine/parser/Lexer.class
-com/unl/automatas/cfgengine/parser/ParserSym.class
-com/unl/automatas/cfgengine/parser/Parser$CUP$Parser$actions.class

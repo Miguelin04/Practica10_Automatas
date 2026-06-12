@@ -1,0 +1,31 @@
+# Backend (Java/Maven)
+backend/target/
+backend/.DS_Store
+backend/.vscode/
+backend/.idea/
+backend/*.iml
+backend/*.log
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.DS_Store
+frontend/.env.local
+frontend/.env
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+*.class
+*.jar
+*.exe
+*.o
+*.so
